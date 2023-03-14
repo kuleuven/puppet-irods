@@ -27,7 +27,7 @@ define irods::lib::install (
     'RedHat': {
       $core_packages = $irods::params::core_packages
       $rm_pkgs = difference($core_packages, $install_pkgs)
-      if $manage_repo {
+      if $manage_repo == 'true' {
         class {'irods::yum::install':
           before => Package[$install_pkgs],
         }
