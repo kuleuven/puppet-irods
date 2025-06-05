@@ -36,11 +36,11 @@ class irods::params inherits irods::globals {
 
   case $::osfamily {
     'RedHat': {
-      $os = "centos${::operatingsystemmajrelease}"
+      $os = "centos${$facts['os']['release']['major']}"
     }
 
     default: {
-      fail("Unsupported platform: ${module_name} currently doesn't support ${::operatingsystem}")
+      fail("Unsupported platform: ${module_name} currently doesn't support ${facts['os']['name']}")
     }
 
   }
