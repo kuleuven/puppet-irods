@@ -3,32 +3,31 @@
 # installed at at time - handling cases, for example, when an
 # irods::client node is changed to a irods::resource node.
 define irods::lib::install (
-  $packages                = undef,
-  $engine_plugin_packages  = [],
-  $core_version            = $irods::params::core_version,
-  $engine_plugin_release   = $irods::params::engine_plugin_release,
-  $manage_repo             = $irods::params::manage_repo,
-  $package_install_options = '',
+  Array $packages               = undef,
+  Array $engine_plugin_packages = [],
+  $core_version                 = $irods::params::core_version,
+  $engine_plugin_release        = $irods::params::engine_plugin_release,
+  $manage_repo                  = $irods::params::manage_repo,
+  $package_install_options      = '',
 ) {
-
-  if is_array($packages) {
+  if $packages {
     $install_pkgs = $packages
   } else {
     $install_pkgs = [$packages]
   }
 
-  if is_array($engine_plugin_packages) {
+  if $engine_plugin_packages {
     $install_engine_plugins = $engine_plugin_packages
   } else {
     $install_engine_plugins = [$engine_plugin_packages]
   }
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'RedHat': {
       $core_packages = $irods::params::core_packages
       $rm_pkgs = difference($core_packages, $install_pkgs)
       if $manage_repo {
-        class {'irods::yum::install':
+        class { 'irods::yum::install':
           before => Package[$install_pkgs],
         }
       }
@@ -41,14 +40,7 @@ define irods::lib::install (
   package { $rm_pkgs:
     ensure => absent,
   }
-  -> package { $install_pkgs:
-    ensure          => $core_version,
-    install_options => $package_install_options,
-  } ->
-  package { $install_engine_plugins:
-    ensure          => "${core_version}${engine_plugin_release}",
-    install_options => $package_install_options,
+  ->  package { $install_pkgs:
+    ensure => $core_version,
   }
-
-
 }
