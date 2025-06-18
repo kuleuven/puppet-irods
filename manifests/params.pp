@@ -35,7 +35,7 @@ class irods::params inherits irods::globals {
     'irods-icommands',
   ]
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'RedHat': {
       $os = "centos${$facts['os']['release']['major']}"
     }
